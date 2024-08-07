@@ -1,0 +1,118 @@
+<style type="text/css">
+    #pair-template {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center
+    }
+
+    #pair-form {
+        position: relative;
+        width: 90%
+    }
+
+    .row {
+        margin-bottom: 1em
+    }
+
+    .logo {
+        display: block;
+        position: relative;
+        width: 25vw;
+        height: 25vw;
+        margin: 10vw auto;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-image: url(./../assets/icon.svg)
+    }
+
+    .invalid>label {
+        color: #FF0000 !important
+    }
+
+    .invalid>input {
+        border-bottom: 1px solid #FF0000 !important
+    }
+
+    .button {
+        width: 100% !important
+    }
+
+    .button:disabled,
+    .button[disabled] {
+        background-color: #ffffff !important;
+        color: #ffffff !important;
+    }
+</style>
+
+
+
+<header class="homey-header">
+    <h1 class="homey-title" data-i18n="settings.title">
+        <!-- This will be filled with the translated string with key 'settings.title'. -->
+    </h1>
+    <p class="homey-subtitle" data-i18n="settings.subtitle">
+        <!-- This will be filled with the translated string with key 'settings.subtitle'. -->
+    </p>
+</header>
+
+<form class="homey-form">
+    <fieldset class="homey-form-fieldset">
+        <div class="homey-form-group">
+            <label class="homey-form-label" for="pair-address">Adguard Home Address</label>
+            <input class="homey-form-input" id="pair-address" type="text" value="my.adguard.address"/>
+        </div>
+        <div class="homey-form-group">
+            <label class="homey-form-label" for="pair-username">Username</label>
+            <input class="homey-form-input" id="pair-username" type="text" value=""/>
+        </div>
+        <div class="homey-form-group">
+            <label class="homey-form-label" for="pair-password">Password</label>
+            <input class="homey-form-input" id="pair-password" type="password" value=""/>
+        </div>
+    </fieldset>
+
+    <button onclick="search()" id="pair-button" class="homey-button-primary-full">
+        Continue
+    </button>
+</form>
+
+<script type="text/javascript">
+    function search() {
+        var error = false;
+        let invalids = document.getElementsByClassName('invalid');
+        for (var i = 0; i < invalids.length; i++) {
+            invalids[i].classList.remove('invalid');
+        }
+        var pBtn = document.getElementById('pair-button');
+        var pAddress = document.getElementById('pair-address');
+        var pUsername = document.getElementById('pair-username');
+        var pPassword = document.getElementById('pair-password');
+
+        pBtn.disabled = true;
+        if (pAddress.value.trim().length === 0) {
+            pAddress.parentNode.classList.add('invalid');
+            error = true;
+        }
+
+        if (error) {
+            pBtn.disabled = false;
+            return false;
+        }
+        let data = {
+            type: 'AdguardHome',
+            address: pAddress.value,
+            username: pUsername.value,
+            password: pPassword.value
+        };
+        Homey.emit('search_devices', data, (error, result) => {
+            pBtn.disabled = false;
+            if (error) {
+                Homey.alert(error.message);
+            } else {
+                Homey.showView('list_devices');
+            }
+        });
+    }
+</script>

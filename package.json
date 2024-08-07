@@ -1,0 +1,19 @@
+{
+  "name": "com.adguard",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts --ignore-path .gitignore ."
+  },
+  "devDependencies": {
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.6",
+    "eslint": "^7.32.0",
+    "eslint-config-athom": "^3.1.3"
+  },
+  "dependencies": {
+    "httpreq": "^1.1.1",
+    "node-fetch": "^3.3.2",
+    "request": "^2.88.2",
+    "util": "^0.12.5"
+  }
+}

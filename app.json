@@ -1,0 +1,65 @@
+{
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "com.adguard",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Adguard Home"
+  },
+  "description": {
+    "en": "Adds support for Adguard Home"
+  },
+  "category": [
+    "internet"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Stefan Lenders",
+    "email": "stefan@lenders-it.nl"
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "Adguard Home"
+      },
+      "class": "other",
+      "capabilities": [],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [],
+      "images": {
+        "small": "/drivers/adguard-home/assets/images/small.png",
+        "large": "/drivers/adguard-home/assets/images/large.png",
+        "xlarge": "/drivers/adguard-home/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "start"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices"
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        },
+        {
+          "id": "done",
+          "template": "done"
+        }
+      ],
+      "id": "adguard-home"
+    }
+  ]
+}
