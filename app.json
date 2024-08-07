@@ -32,7 +32,26 @@
         "en": "Adguard Home"
       },
       "class": "other",
-      "capabilities": [],
+      "capabilities": [
+        "onoff.running",
+        "onoff.protection_enabled"
+      ],
+      "capabilitiesOptions": {
+        "onoff.running": {
+          "uiComponent": "sensor",
+          "title": {
+            "nl": "Online",
+            "en": "Online"
+          },
+          "setable": false
+        },
+        "onoff.protection_enabled": {
+          "title": {
+            "nl": "Protection Enabled",
+            "en": "Bescherming Ingeschakeld"
+          }
+        }
+      },
       "platforms": [
         "local"
       ],

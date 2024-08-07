@@ -60,16 +60,21 @@
 <form class="homey-form">
     <fieldset class="homey-form-fieldset">
         <div class="homey-form-group">
+            <label class="homey-form-label" for="pair-name">Name</label>
+            <input class="homey-form-input" id="pair-name" name="pair-name" type="text" value="AdGuard Home"/>
+        </div>
+        <div class="homey-form-group">
             <label class="homey-form-label" for="pair-address">Adguard Home Address</label>
-            <input class="homey-form-input" id="pair-address" type="text" value="my.adguard.address"/>
+
+            <input class="homey-form-input" id="pair-address" name="pair-address" type="text" placeholder="192.168.1.1"/>
         </div>
         <div class="homey-form-group">
             <label class="homey-form-label" for="pair-username">Username</label>
-            <input class="homey-form-input" id="pair-username" type="text" value=""/>
+            <input class="homey-form-input" id="pair-username" name="pair-username" type="text" />
         </div>
         <div class="homey-form-group">
             <label class="homey-form-label" for="pair-password">Password</label>
-            <input class="homey-form-input" id="pair-password" type="password" value=""/>
+            <input class="homey-form-input" id="pair-password" name="pair-password" type="password" />
         </div>
     </fieldset>
 
@@ -78,7 +83,74 @@
     </button>
 </form>
 
-<script type="text/javascript">
+<script type="application/javascript">
+    class AdGuardAddDevice {
+        constructor() {
+
+            const form = document.querySelector('form');
+            form.addEventListener('submit', e => this.onSubmit(e));
+        }
+
+        onSubmit(e) {
+            e.preventDefault();
+            let deviceId = this.getUIID();
+
+            const formData = new FormData(e.target);
+            const data = {
+                id: deviceId,
+                name: formData.get('pair-name'),
+                address: formData.get('pair-address'),
+                username: formData.get('pair-username'),
+                password: formData.get('pair-password')
+            };
+
+            Homey.emit("search_devices", data).then(function (result) {
+                if (result) {
+                    Homey.createDevice({
+                        // The name of the device that will be shown to the user
+                        name: data.name,
+
+                        // The data object is required and should contain only unique properties for the device.
+                        // So a MAC address is good, but an IP address is bad (can change over time)
+                        data: {
+                            id: data.id
+                        },
+
+                        // Optional: The store is dynamic and persistent storage for your device
+                        store: {
+                            // For example store the IP address of your device
+                            //address: "127.0.0.1",
+                        },
+
+                        // Optional: Initial device settings that can be changed by the user afterwards
+                        settings: {
+                            address: data.address,
+                            username: data.username,
+                            password: data.password
+                        },
+                    })
+                    .then(function (result) {
+                        Homey.done();
+                    })
+                    .catch(function (error) {
+                        Homey.alert(error);
+                    });
+                }
+            });
+        }
+
+        getUIID() {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            }
+            return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+        }
+    }
+
+    const adGuardAddDevice = new AdGuardAddDevice();
+
     function search() {
         var error = false;
         let invalids = document.getElementsByClassName('invalid');
