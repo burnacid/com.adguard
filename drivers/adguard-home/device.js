@@ -15,7 +15,7 @@ class AdguardHomeDevice extends Device {
 
     this.config = this.getSettings();
 
-    this.log(`Address: ${this.config.address}, Username: ${this.config.address}`)
+    this.log(`Address: ${this.config.address}, Username: ${this.config.username}`)
 
     this.refreshing = false
     this.api = new AdguardAPI(this.config);
@@ -160,7 +160,7 @@ class AdguardHomeDevice extends Device {
       }
 
       let json = await this.api.getJsonData(status)
-      this.log(json)
+      // this.log(json)
 
       // Protection State
       let currentValue = this.getCapabilityValue('onoff.protection_enabled')
