@@ -1,0 +1,38 @@
+[
+    {
+        "id": "address",
+        "type": "text",
+        "label": {
+            "en": "Address",
+            "nl": "Adres"
+        },
+        "hint": {
+            "en": "The direct address for adguard. Do not add http(s):// to the address.",
+            "nl": "Het directe adres voor adguard. Voeg geen http(s):// toe aan het adres."
+        }
+    },
+    {
+        "id": "username",
+        "type": "text",
+        "label": {
+            "en": "Username",
+            "nl": "Gebruikersnaam"
+        },
+        "hint": {
+            "en": "The name of the user.",
+            "nl": "De naam van de gebruiker."
+        }
+    },
+    {
+        "id": "password",
+        "type": "password",
+        "label": {
+            "en": "Password",
+            "nl": "Wachtwoord"
+        },
+        "hint": {
+            "en": "The password of the user.",
+            "nl": "Het wachtwoord van de gebruiker."
+        }
+    }
+]
