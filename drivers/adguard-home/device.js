@@ -26,6 +26,53 @@ class AdguardHomeDevice extends Device {
       await this.toggleProtection();
     });
 
+    // TRIGGER FLOWS
+    this._protectionEnabledFlow = this.homey.flow.getDeviceTriggerCard("protection_enabled");
+    this._protectionDisabledFlow = this.homey.flow.getDeviceTriggerCard("protection_disabled");
+
+    // TRIGGER CONDITIONAL
+    const isProtectionEnabledCondition = this.homey.flow.getConditionCard('is_protection_enabled');
+    isProtectionEnabledCondition.registerRunListener(async (args, state) => {
+      this.log("[FLOW CONDITION] Is protection enabled")
+      let status = await this.api.httpRequest("/control/status")
+      if (status == false) {
+        this.error(this.api.lastError)
+        throw new Error(this.api.lastError)
+      }
+
+      let json = await this.api.getJsonData(status)
+      return json.protection_enabled
+    });
+
+    // TRIGGER ACTIONS
+    const enableProtectionAction = this.homey.flow.getActionCard('enable_protection');
+    enableProtectionAction.registerRunListener(async (args, state) => {
+      this.log("[FLOW ACTION] Enable Protection")
+      let currentValue = this.getCapabilityValue('onoff.protection_enabled')
+
+      this.setCapabilityValue('onoff.protection_enabled', true);
+      let responce = await this.api.httpRequest("/control/protection", "POST", '{"enabled": true}')
+      responce = responce.trim()
+      if (responce != "OK") {
+        this.setCapabilityValue('onoff.protection_enabled', currentValue);
+        throw new Error(`Protection could not be enabled (${responce})`)
+      }
+    });
+
+    const disableProtectionAction = this.homey.flow.getActionCard('disable_protection');
+    disableProtectionAction.registerRunListener(async (args, state) => {
+      this.log("[FLOW ACTION] Disable Protection")
+      let currentValue = this.getCapabilityValue('onoff.protection_enabled')
+
+      this.setCapabilityValue('onoff.protection_enabled', false);
+      let responce = await this.api.httpRequest("/control/protection", "POST", '{"enabled": false}')
+      responce = responce.trim()
+      if (responce != "OK") {
+        this.setCapabilityValue('onoff.protection_enabled', currentValue);
+        throw new Error(`Protection could not be enabled (${responce})`)
+      }
+    });
+
     await this._syncDevice()
   }
 
@@ -69,7 +116,7 @@ class AdguardHomeDevice extends Device {
     let currentState = await this.getCapabilityValue('onoff.protection_enabled')
     let protection = await this.api.httpRequest("/control/protection", "POST", `{"enabled": ${!currentState}}`)
     this.log(protection.trim())
-    if(protection.trim() != "OK"){
+    if (protection.trim() != "OK") {
       this.log(`Unable to disable protection (${protection.trim()})`)
       throw new Error(`Unable to disable protection (${protection.trim()})`)
     }
@@ -115,8 +162,21 @@ class AdguardHomeDevice extends Device {
       let json = await this.api.getJsonData(status)
       this.log(json)
 
-      this.changeCapabilityValue('onoff.protection_enabled',json.protection_enabled)
-      this.changeCapabilityValue('onoff.running',json.running)
+      // Protection State
+      let currentValue = this.getCapabilityValue('onoff.protection_enabled')
+      if (currentValue != json.protection_enabled) {
+        this.setCapabilityValue('onoff.protection_enabled', json.protection_enabled);
+
+        if (json.protection_enabled) {
+          this.log("[FLOW TRIGGER] Protection Enabled")
+          this._protectionEnabledFlow.trigger(this, {}, {}).then(this.log).catch(this.error);
+        } else {
+          this.log("[FLOW TRIGGER] Protection Disabled")
+          this._protectionDisabledFlow.trigger(this, {}, {}).then(this.log).catch(this.error);
+        }
+      }
+
+      this.changeCapabilityValue('onoff.running', json.running)
     } catch (error) {
       this.error(error);
       this.setUnavailable(error.message);

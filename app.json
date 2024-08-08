@@ -26,6 +26,84 @@
     "name": "Stefan Lenders",
     "email": "stefan@lenders-it.nl"
   },
+  "flow": {
+    "triggers": [
+      {
+        "id": "protection_enabled",
+        "title": {
+          "en": "Protection enabled",
+          "nl": "Bescherming ingeschakeld"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=adguard-home"
+          }
+        ]
+      },
+      {
+        "id": "protection_disabled",
+        "title": {
+          "en": "Protection disabled",
+          "nl": "Bescherming uitgeschakeld"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=adguard-home"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "is_protection_enabled",
+        "title": {
+          "en": "Protection is !{{enabled|disabled}}",
+          "nl": "Bescherming is !{{ingeschakeld|uitgeschakeld}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=adguard-home"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "enable_protection",
+        "title": {
+          "en": "Enable protection",
+          "nl": "Bescherming inschakelen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=adguard-home"
+          }
+        ]
+      },
+      {
+        "id": "disable_protection",
+        "title": {
+          "en": "Disable protection",
+          "nl": "Bescherming uitschakelen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=adguard-home"
+          }
+        ]
+      }
+    ]
+  },
   "drivers": [
     {
       "name": {
