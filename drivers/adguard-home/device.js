@@ -93,6 +93,18 @@ class AdguardHomeDevice extends Device {
    */
   async onSettings({ oldSettings, newSettings, changedKeys }) {
     this.log('Adguard settings where changed');
+
+    if(changedKeys.includes('address')){
+      this.api.setAddress(newSettings.address)
+    }
+    if(changedKeys.includes('username')){
+      this.api.setUsername(newSettings.username)
+    }
+    if(changedKeys.includes('password')){
+      this.api.setPassword(newSettings.password)
+    }
+
+    await this._syncDevice()
   }
 
   /**
@@ -159,8 +171,19 @@ class AdguardHomeDevice extends Device {
         return
       }
 
+      if(!await this.api.isJsonString(status)){
+        this.setUnavailable(status)
+        this.refreshing = false
+        return
+      }
+
       let json = await this.api.getJsonData(status)
-      // this.log(json)
+      
+      if(!json){
+        this.setUnavailable(this.api.lastError)
+        this.refreshing = false
+        return
+      }
 
       // Protection State
       let currentValue = this.getCapabilityValue('onoff.protection_enabled')
@@ -182,6 +205,7 @@ class AdguardHomeDevice extends Device {
       this.setUnavailable(error.message);
     }
 
+    this.setAvailable();
     this.refreshing = false
   }
 
