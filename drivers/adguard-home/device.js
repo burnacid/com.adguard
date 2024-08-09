@@ -73,6 +73,9 @@ class AdguardHomeDevice extends Device {
       }
     });
 
+    this.queryTimeUnit = ''
+    this.timeunitString = ''
+
     await this._syncDevice()
   }
 
@@ -163,6 +166,7 @@ class AdguardHomeDevice extends Device {
     this.refreshing = true
 
     try {
+      // Get status information
       let status = await this.api.httpRequest("/control/status")
 
       if (status == false) {
@@ -198,8 +202,55 @@ class AdguardHomeDevice extends Device {
           this._protectionDisabledFlow.trigger(this, {}, {}).then(this.log).catch(this.error);
         }
       }
-
       this.changeCapabilityValue('onoff.running', json.running)
+
+      // Query information
+      let queryDetails = await this.api.httpRequest("/control/stats")
+
+      if (queryDetails == false) {
+        this.setUnavailable(this.api.lastError)
+        this.refreshing = false
+        return
+      }
+
+      if(!await this.api.isJsonString(queryDetails)){
+        this.setUnavailable(queryDetails)
+        this.refreshing = false
+        return
+      }
+
+      let queryDetailsJson = await this.api.getJsonData(queryDetails)
+      
+      if(!queryDetailsJson){
+        this.setUnavailable(this.api.lastError)
+        this.refreshing = false
+        return
+      }
+
+      if(queryDetailsJson.time_units != this.queryTimeUnit){
+        this.queryTimeUnit = queryDetailsJson.time_units
+        this.timeunitString = this.queryTimeUnit.substring(0, this.queryTimeUnit.length - 1)
+        
+        this.setCapabilityOptions('measure_query.total',{title: `Queries last ${this.timeunitString}`})
+      }
+
+      // Number of Queries
+      let currentNumberOfQueries = this.getCapabilityValue('measure_query.total')
+      if (currentNumberOfQueries != queryDetailsJson.dns_queries.at(-1)) {
+        this.setCapabilityValue('measure_query.total', queryDetailsJson.dns_queries.at(-1));
+
+        // if (json.protection_enabled) {
+        //   this.log("[FLOW TRIGGER] Protection Enabled")
+        //   this._protectionEnabledFlow.trigger(this, {}, {}).then(this.log).catch(this.error);
+        // } else {
+        //   this.log("[FLOW TRIGGER] Protection Disabled")
+        //   this._protectionDisabledFlow.trigger(this, {}, {}).then(this.log).catch(this.error);
+        // }
+      }
+
+      
+      this.log()
+
     } catch (error) {
       this.error(error);
       this.setUnavailable(error.message);

@@ -5,7 +5,8 @@
   "class": "other",
   "capabilities": [
     "onoff.running",
-    "onoff.protection_enabled"
+    "onoff.protection_enabled",
+    "measure_query.total"
   ],
   "capabilitiesOptions": {
     "onoff.running": {
@@ -21,6 +22,12 @@
         "nl": "Protection Enabled",
         "en": "Bescherming Ingeschakeld"
       }
+    },
+    "measure_query.total": {
+      "title": {
+        "nl": "DNS Queries",
+        "en": "DNS Verzoeken"
+      }
     }
   },
   "platforms": [
@@ -35,18 +42,6 @@
   "pair": [
     {
       "id": "start"
-    },
-    {
-      "id": "list_devices",
-      "template": "list_devices"
-    },
-    {
-      "id": "add_devices",
-      "template": "add_devices"
-    },
-    {
-      "id": "done",
-      "template": "done"
     }
   ]
 }
