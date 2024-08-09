@@ -78,9 +78,7 @@
         </div>
     </fieldset>
 
-    <button onclick="search()" id="pair-button" class="homey-button-primary-full">
-        Continue
-    </button>
+    <button class="homey-button-primary-full" type="submit" data-i18n="manual_input.buttons.next">Connect</button>
 </form>
 
 <script type="application/javascript">
@@ -96,6 +94,7 @@
             let deviceId = this.getUIID();
 
             const formData = new FormData(e.target);
+            console.log(formData)
             const data = {
                 id: deviceId,
                 name: formData.get('pair-name'),
@@ -103,9 +102,13 @@
                 username: formData.get('pair-username'),
                 password: formData.get('pair-password')
             };
+            console.log(data)
 
             Homey.emit("search_devices", data).then(function (result) {
+                console.log("search_devices")
+                console.log(result)
                 if (result) {
+                    console.log("Creating Device")
                     Homey.createDevice({
                         // The name of the device that will be shown to the user
                         name: data.name,
@@ -150,41 +153,4 @@
     }
 
     const adGuardAddDevice = new AdGuardAddDevice();
-
-    function search() {
-        var error = false;
-        let invalids = document.getElementsByClassName('invalid');
-        for (var i = 0; i < invalids.length; i++) {
-            invalids[i].classList.remove('invalid');
-        }
-        var pBtn = document.getElementById('pair-button');
-        var pAddress = document.getElementById('pair-address');
-        var pUsername = document.getElementById('pair-username');
-        var pPassword = document.getElementById('pair-password');
-
-        pBtn.disabled = true;
-        if (pAddress.value.trim().length === 0) {
-            pAddress.parentNode.classList.add('invalid');
-            error = true;
-        }
-
-        if (error) {
-            pBtn.disabled = false;
-            return false;
-        }
-        let data = {
-            type: 'AdguardHome',
-            address: pAddress.value,
-            username: pUsername.value,
-            password: pPassword.value
-        };
-        Homey.emit('search_devices', data, (error, result) => {
-            pBtn.disabled = false;
-            if (error) {
-                Homey.alert(error.message);
-            } else {
-                Homey.showView('list_devices');
-            }
-        });
-    }
 </script>
